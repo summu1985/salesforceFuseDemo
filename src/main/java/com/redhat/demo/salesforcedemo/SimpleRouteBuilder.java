@@ -7,12 +7,28 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp; 
 import java.time.LocalDate;
 
+import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+
 
 @Component
 public class SimpleRouteBuilder extends RouteBuilder {
 
+    private final Environment env;
+
+    public SimpleRouteBuilder(Environment env) {
+        this.env = env;
+    }
+
     @Override
     public void configure() throws Exception {
+
+        restConfiguration()
+        .component("servlet")
+        .bindingMode(RestBindingMode.json);
+
         // from("timer:foo?period=100000")
         // .setBody(constant("Started..."))
         // .to("log:response")
@@ -20,13 +36,36 @@ public class SimpleRouteBuilder extends RouteBuilder {
         //         .convertBodyTo(String.class)
         //         .to("log:Received update notification for ${body.name}");
 
+        rest()
+        .consumes(MediaType.APPLICATION_JSON_VALUE)
+        .produces(MediaType.APPLICATION_JSON_VALUE)
+        // .get("/{name}").route()
+        // .to("{{route.findBookByName}}")
+        // .endRest()
+        .get("/opportunity").to("{{route.findAllOpportunities}}");
+        // .post("/").route()
+        // .marshal().json()
+        // .unmarshal(getJacksonDataFormat(Book.class))
+        // .to("{{route.saveBook}}")
+        // .endRest()
+        // .delete("/{bookId}").route()
+        // .to("{{route.removeBook}}")
+
         from("timer:foo?period=100000")
         .setBody(constant("Started..."))
         .to("log:response")
-                .to("salesforce:query?sObjectQuery=SELECT Id,AccountId,StageName,Name,ExpectedRevenue,NextStep from Opportunity where Id='0065j00000ahUQFAA2'&sObjectClass=org.apache.camel.salesforce.dto.Opportunity.class&rawPayload=true")
+                .to("salesforce:query?sObjectQuery=SELECT Id,Account.Name,StageName,Name,Amount,CloseDate from Opportunity&sObjectClass=org.apache.camel.salesforce.dto.Opportunity.class&rawPayload=true")
                 .convertBodyTo(String.class)
                 .to("log:Received update notification for ${body.name}");
 
+        from("{{route.findAllOpportunities}}")
+        .setBody(constant("Started..."))
+        .to("log:response")
+                .to("salesforce:query?sObjectQuery=SELECT Id,AccountId,StageName,Name,ExpectedRevenue,NextStep from Opportunity &sObjectClass=org.apache.camel.salesforce.dto.Opportunity.class&rawPayload=true")
+                .convertBodyTo(String.class)
+                .unmarshal(getJacksonDataFormat(OpportunityList.class));
+                //.to("log:Received update notification for ${body.name}");
+        
         // from("timer:foo?period=100000")
         // .process(exchange->{
         //     Opportunity opp = new Opportunity();
@@ -62,4 +101,9 @@ public class SimpleRouteBuilder extends RouteBuilder {
         // .to("log:response");
     }
 
+    private JacksonDataFormat getJacksonDataFormat(Class<?> unmarshalType) {
+        JacksonDataFormat format = new JacksonDataFormat();
+        format.setUnmarshalType(unmarshalType);
+        return format;
+    }
 }
