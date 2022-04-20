@@ -72,8 +72,9 @@ public class SimpleRouteBuilder extends RouteBuilder {
         .to("log:response")
                 .to("salesforce:query?sObjectQuery=SELECT Id,Account.Name,AccountId,StageName,Name,Amount,Probability,CloseDate from Opportunity &sObjectClass=org.apache.camel.salesforce.dto.Opportunity.class&rawPayload=true")
                 .convertBodyTo(String.class)
-                .unmarshal(getJacksonDataFormat(OpportunityList.class));
-                //.to("log:Received update notification for ${body.name}");
+                .unmarshal(getJacksonDataFormat(OpportunityList.class))
+                .marshal().json()
+                .to("log:response");
         
         from("{{route.addOpportunity}}")
         .to("log:response")
