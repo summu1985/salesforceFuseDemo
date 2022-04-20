@@ -37,9 +37,10 @@ public class OpportunityList {
        this.records = records;
    }
 
-   public String toString() {
-       return this.records.toString()
-       +" totalSize = " +this.totalSize
-       +" done = " + this.done;
-   }
+@Override
+public String toString() {
+    return "OpportunityList [done=" + done + ", records=" + records + ", totalSize=" + totalSize + "]";
+}
+
+
 }

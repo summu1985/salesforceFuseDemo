@@ -1,24 +1,30 @@
 package com.redhat.demo.salesforcedemo;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+// @JsonIgnoreProperties(ignoreUnknown = true)
 public class Opportunity {
-    @JsonProperty("Attributes")
+    @JsonProperty("attributes")
     Attributes attributes;
     @JsonProperty("Id")
     private String id;
+    @JsonProperty("Account")
+    private Account account;
     @JsonProperty("AccountId")
     private String accountId;
     @JsonProperty("StageName")
     private String stageName;
     @JsonProperty("Name")
     private String name;
-    @JsonProperty("ExpectedRevenue")
-    private float expectedRevenue;
-    @JsonProperty("NextStep")
-    private String nextStep;
+    @JsonProperty("Amount")
+    private float amount;
+    @JsonProperty("Probability")
+    private float probability;
+    @JsonProperty("CloseDate")
+    private String closeDate;
    
     public Opportunity() {}
    
@@ -30,6 +36,10 @@ public class Opportunity {
    
     public String getId() {
      return id;
+    }
+
+    public Account getAccount() {
+        return account;
     }
    
     public String getAccountId() {
@@ -44,14 +54,17 @@ public class Opportunity {
      return name;
     }
    
-    public float getExpectedRevenue() {
-     return expectedRevenue;
+    public float getProbability() {
+     return probability;
+    }
+
+    public String getCloseDate() {
+        return closeDate;
     }
    
-    public String getNextStep() {
-     return nextStep;
+    public float getAmount() {
+        return this.amount;
     }
-   
     // Setter Methods 
    
     public void setAttributes(Attributes attributesObject) {
@@ -60,6 +73,10 @@ public class Opportunity {
    
     public void setId(String Id) {
      this.id = Id;
+    }
+
+    public void setAccount(Account account){
+        this.account = account;
     }
    
     public void setAccountId(String AccountId) {
@@ -74,18 +91,24 @@ public class Opportunity {
      this.name = Name;
     }
    
-    public void setExpectedRevenue(float ExpectedRevenue) {
-     this.expectedRevenue = ExpectedRevenue;
+    public void setProbability(float probability) {
+     this.probability = probability;
     }
-   
-    public void setNextStep(String NextStep) {
-     this.nextStep = NextStep;
+
+    public void setClosDate(String closeDate) {
+        this.closeDate = closeDate;
+    }
+
+    public void setAmount(float amount) {
+        this.amount = amount;
     }
 
     @Override
     public String toString() {
-        return "Id : " + this.id
-        +" AccountId: " + this.accountId
-        +" StageName: " + this.stageName;
+        return "Opportunity [account=" + account + ", accountId=" + accountId + ", amount=" + amount + ", attributes="
+                + attributes + ", closeDate=" + closeDate + ", id=" + id + ", name=" + name + ", probability="
+                + probability + ", stageName=" + stageName + "]";
     }
+
+
    }

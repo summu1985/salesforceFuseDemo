@@ -30,4 +30,11 @@ public class Attributes {
     public void setUrl(String url) {
      this.url = url;
     }
+
+    @Override
+    public String toString() {
+        return "Attributes [type=" + type + ", url=" + url + "]";
+    }
+
+    
 }
