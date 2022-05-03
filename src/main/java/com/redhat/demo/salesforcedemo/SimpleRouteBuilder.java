@@ -28,45 +28,13 @@ public class SimpleRouteBuilder extends RouteBuilder {
 
         restConfiguration()
         .component("servlet");
-        //.bindingMode(RestBindingMode.json);
-
-        // from("timer:foo?period=100000")
-        // .setBody(constant("Started..."))
-        // .to("log:response")
-        //         .to("salesforce:query?sObjectQuery=SELECT Id,AccountId,StageName,Name,ExpectedRevenue,NextStep from Opportunity&sObjectClass=org.apache.camel.salesforce.dto.Opportunity.class&rawPayload=true")
-        //         .convertBodyTo(String.class)
-        //         .to("log:Received update notification for ${body.name}");
 
         rest()
         .consumes(MediaType.APPLICATION_JSON_VALUE)
         .produces(MediaType.APPLICATION_JSON_VALUE)
-        // .get("/{name}").route()
-        // .to("{{route.findBookByName}}")
-        // .endRest()
+
         .get("/opportunity").to("{{route.findAllOpportunities}}")
         .post("/opportunity").to("{{route.addOpportunity}}");
-        // .marshal().json()
-        // .unmarshal(getJacksonDataFormat(Book.class))
-        // .to("{{route.saveBook}}")
-        // .endRest()
-        // .delete("/{bookId}").route()
-        // .to("{{route.removeBook}}")
-
-        // from("timer:foo?period=100000")
-        // .setBody(constant("Started..."))
-        // .to("log:response")
-        //         .to("salesforce:query?sObjectQuery=SELECT Id,Account.Name,AccountId,StageName,Name,Amount,Probability,CloseDate from Opportunity where AccountId='0015j000007YQrGAAW'&sObjectClass=org.apache.camel.salesforce.dto.Opportunity.class&rawPayload=true")
-        //         // .convertBodyTo(String.class)
-        //         .unmarshal(getJacksonDataFormat(OpportunityList.class))
-        //         .process(new Processor() {
-        //             public void process (Exchange exchange) throws Exception {
-        //                 OpportunityList olist = exchange.getIn().getBody(OpportunityList.class);
-        //                 Opportunity opp = olist.getRecords().get(0);
-        //                 exchange.getIn().setBody(opp);
-        //             }
-        //         })
-        //         .marshal().json()
-        //         .to("log:response");
 
         from("{{route.findAllOpportunities}}")
         .to("log:response")
@@ -79,22 +47,24 @@ public class SimpleRouteBuilder extends RouteBuilder {
         from("{{route.addOpportunity}}")
         .to("log:response")
         .unmarshal(getJacksonDataFormat(Opportunity.class))
-        .process(new Processor() {
-            public void process (Exchange exchange) throws Exception {
-                org.apache.camel.salesforce.dto.Opportunity opp = new org.apache.camel.salesforce.dto.Opportunity();
-                Opportunity appOpp = exchange.getIn().getBody(Opportunity.class);
-                opp.setAccountId(appOpp.getAccountId());
-                opp.setStageName(Opportunity_StageNameEnum.fromValue(appOpp.getStageName()));
-                opp.setName(appOpp.getName());
-                opp.setCloseDate(LocalDate.parse(appOpp.getCloseDate()));
-                opp.setProbability(Double.valueOf(String.valueOf(appOpp.getProbability())));
-                opp.setExternalId__c(new Timestamp(System.currentTimeMillis()).toString());
-                exchange.getIn().setBody(opp);
-        }})
-        .marshal().json()
+        .removeHeaders("*")
+        .process(exchange->{
+            org.apache.camel.salesforce.dto.Opportunity opp = new org.apache.camel.salesforce.dto.Opportunity();
+            Opportunity appOpp = exchange.getIn().getBody(Opportunity.class);
+            opp.setAccountId(appOpp.getAccountId());
+            opp.setStageName(Opportunity_StageNameEnum.fromValue(appOpp.getStageName()));
+            opp.setName(appOpp.getName());
+            opp.setCloseDate(LocalDate.parse(appOpp.getCloseDate()));
+            opp.setProbability(Double.valueOf(String.valueOf(appOpp.getProbability())));
+            opp.setExternalId__c(new Timestamp(System.currentTimeMillis()).toString());
+            exchange.getIn().setBody(opp,Opportunity.class);
+        })
+        .to("log:response")
         .to("salesforce:upsertSObject?sObjectIdName=ExternalId__c")
-        .log("SObject ID: ${body?.id}")
-        .convertBodyTo(String.class);
+        //.marshal().json()
+        .to("log:response")
+        .log("SObject ID: ${body?.id}");
+        // .convertBodyTo(String.class);
     }
 
     private JacksonDataFormat getJacksonDataFormat(Class<?> unmarshalType) {
