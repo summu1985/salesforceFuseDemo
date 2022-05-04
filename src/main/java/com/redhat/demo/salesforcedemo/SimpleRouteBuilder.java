@@ -43,7 +43,7 @@ public class SimpleRouteBuilder extends RouteBuilder {
                 .unmarshal(getJacksonDataFormat(OpportunityList.class))
                 .marshal().json()
                 .to("log:response");
-        
+
         from("{{route.addOpportunity}}")
         .to("log:response")
         .unmarshal(getJacksonDataFormat(Opportunity.class))
@@ -54,6 +54,7 @@ public class SimpleRouteBuilder extends RouteBuilder {
             opp.setAccountId(appOpp.getAccountId());
             opp.setStageName(Opportunity_StageNameEnum.fromValue(appOpp.getStageName()));
             opp.setName(appOpp.getName());
+            opp.setAmount(Double.valueOf(appOpp.getAmount()));
             opp.setCloseDate(LocalDate.parse(appOpp.getCloseDate()));
             opp.setProbability(Double.valueOf(String.valueOf(appOpp.getProbability())));
             opp.setExternalId__c(new Timestamp(System.currentTimeMillis()).toString());
