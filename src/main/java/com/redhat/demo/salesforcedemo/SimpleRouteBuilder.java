@@ -66,6 +66,13 @@ public class SimpleRouteBuilder extends RouteBuilder {
         .to("log:response")
         .log("SObject ID: ${body?.id}");
         // .convertBodyTo(String.class);
+
+        // route for consuming files from ftp server
+        //from("ftp:{{ftp_user}}@{{ftp_host}}/{{ftp_dir}}?noop=true&password={{ftp_password}}")
+        from("ftp://{{ftp_host}}/{{ftp_dir}}/?username={{ftp_user}}&password={{ftp_password}}&delete=true&passiveMode=true&localWorkDirectory=/tmp&transferLoggingLevel=INFO&transferLoggingIntervalSeconds=1&transferLoggingVerbose=false&delay=5s&noop=true")
+        .log("Processing file : ${headers.CamelFileName}")
+        .log("Downloaded File Content: ${body}")
+        .to("file:///tmp");
     }
 
     private JacksonDataFormat getJacksonDataFormat(Class<?> unmarshalType) {
