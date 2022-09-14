@@ -1,0 +1,257 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "salesforce-fuse-integration",
+        "version": "0.0.1",
+        "description": "API to retrieve Opportunity list from Salesforce via camel-salesforce component",
+        "contact": {
+            "name": "Sumit Mukherjee",
+            "url": "https://github.com/summu1985/salesforceFuseDemo",
+            "email": "summukhe@redhat.com"
+        },
+        "license": {
+            "name": "GNU AGPLv3",
+            "url": "https://www.gnu.org/licenses/agpl.txt"
+        }
+    },
+    "paths": {
+        "/opportunity": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpportunityList"
+                                }
+                            }
+                        },
+                        "description": "Get list of opportunities"
+                    }
+                },
+                "operationId": "getOpportunities",
+                "summary": "Retrieves all opportunities from Salesforce"
+            },
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Opportunity"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "text/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpportunityCreatedResponse"
+                                }
+                            }
+                        },
+                        "description": "Create an opportunity in Salesforce"
+                    }
+                },
+                "operationId": "createOpportunity",
+                "summary": "Create an Opportunity in Salesforce"
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "OpportunityList": {
+                "title": "Root Type for OpportunityList",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "totalSize": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "records": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "attributes": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "Id": {
+                                    "type": "string"
+                                },
+                                "Account": {
+                                    "type": "object",
+                                    "properties": {
+                                        "attributes": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "Name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "AccountId": {
+                                    "type": "string"
+                                },
+                                "StageName": {
+                                    "type": "string"
+                                },
+                                "Name": {
+                                    "type": "string"
+                                },
+                                "Amount": {
+                                    "format": "int32",
+                                    "type": "integer"
+                                },
+                                "Probability": {
+                                    "format": "int32",
+                                    "type": "integer"
+                                },
+                                "CloseDate": {
+                                    "format": "date",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "totalSize": 36,
+                    "done": true,
+                    "records": [
+                        {
+                            "attributes": {
+                                "type": "Opportunity",
+                                "url": "/services/data/v53.0/sobjects/Opportunity/0065j00000qgIVUAA2"
+                            },
+                            "Id": "0065j00000qgIVUAA2",
+                            "Account": {
+                                "attributes": {
+                                    "type": "Account",
+                                    "url": "/services/data/v53.0/sobjects/Account/0015j00000m2GwgAAE"
+                                },
+                                "Name": "TCS"
+                            },
+                            "AccountId": "0015j00000m2GwgAAE",
+                            "StageName": "Prospecting",
+                            "Name": "RHAF",
+                            "Amount": 2000,
+                            "Probability": 100,
+                            "CloseDate": "2022-09-30"
+                        }
+                    ]
+                }
+            },
+            "Opportunity": {
+                "title": "Root Type for Opportunity",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "Account": {
+                        "type": "object",
+                        "properties": {
+                            "attributes": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "url": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "Name": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "AccountId": {
+                        "type": "string"
+                    },
+                    "StageName": {
+                        "type": "string"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Amount": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "Probability": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "CloseDate": {
+                        "format": "date",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "Account": {
+                        "attributes": {
+                            "type": "Account",
+                            "url": "/services/data/v53.0/sobjects/Account/0015j00000dkwdKAAQ"
+                        },
+                        "Name": "Stellantis"
+                    },
+                    "AccountId": "0015j00000dkwdKAAQ",
+                    "StageName": "Qualification",
+                    "Name": "RHI on OCP",
+                    "Amount": 3000,
+                    "Probability": 100,
+                    "CloseDate": "2022-06-30"
+                }
+            },
+            "OpportunityCreatedResponse": {
+                "title": "Root Type for OpportunityCreatedResponse",
+                "description": "Response from Salesforce on opportunity creation",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "errors": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "created": {
+                        "type": "boolean"
+                    }
+                },
+                "example": {
+                    "id": "0065j00000r99qPAAQ",
+                    "errors": [],
+                    "success": true,
+                    "created": true
+                }
+            }
+        }
+    }
+}
