@@ -33,7 +33,7 @@ public class SimpleRouteBuilder extends RouteBuilder {
         .consumes(MediaType.APPLICATION_JSON_VALUE)
         .produces(MediaType.APPLICATION_JSON_VALUE)
 
-        .get("/opportunity").to("{{route.findAllOpportunities}}")
+        .get("/opportunities").to("{{route.findAllOpportunities}}")
         .post("/opportunity").to("{{route.addOpportunity}}");
 
         from("{{route.findAllOpportunities}}")
